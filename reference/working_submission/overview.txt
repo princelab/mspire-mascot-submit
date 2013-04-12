@@ -1,0 +1,31 @@
+URL	http://jp1.chem.byu.edu/mascot/cgi/nph-mascot.exe?1
+Status	Complete
+Response Code	200 OK
+Protocol	HTTP/1.1
+Method	POST
+Kept Alive	No
+Content-Type	text/html
+Client Address	/127.0.0.1
+Remote Address	jp1.chem.byu.edu/192.168.101.153
+Timing	
+Request Start Time	4/12/13 1:58:32 AM
+Request End Time	4/12/13 1:58:32 AM
+Response Start Time	4/12/13 1:58:32 AM
+Response End Time	4/12/13 1:58:35 AM
+Duration	3.10 sec
+DNS	408 ms
+Connect	82 ms
+SSL Handshake	-
+Request	80 ms
+Response	2.34 sec
+Latency	183 ms
+Speed	5.85 KB/s
+Response Speed	0.64 KB/s
+Size	
+Request Header	590 bytes
+Response Header	89 bytes
+Request	16.07 KB (16458 bytes)
+Response	1.41 KB (1445 bytes)
+Total	18.15 KB (18582 bytes)
+Request Compression	-
+Response Compression	-

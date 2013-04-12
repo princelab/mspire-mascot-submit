@@ -1,7 +1,10 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
-describe "MspireMascotSubmit" do
-  it "fails" do
-    fail "hey buddy, you should probably rename this file and start specing for real"
+require 'mspire/mascot/submit'
+
+describe "submitting" do
+  it 'works' do
+    form = Mspire::Mascot::Submit.new
+    form.submit!
   end
 end

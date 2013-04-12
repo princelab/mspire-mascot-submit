@@ -1,0 +1,1 @@
+Mascot does a lot of processing and checking before submitting a form to the mascot server.  Because of this, the easiest way to get to the form data it *actually* submits is to use something like charles, a web debugging proxy application (free 30-day trial).
