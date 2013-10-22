@@ -1,166 +1,27 @@
 require 'net/http/post/multipart'
 
+require 'stringio'
+
+class File
+  def continue_timeout()
+    sleep 2
+  end
+end
+
+class Net::HTTPGenericRequest
+  def write_tmp(filename="tmp.tmp")
+    File.open(filename,'w') do |out|
+      exec(out, '1.1', path)
+    end
+  end
+end
+
+
 module Mspire
   module Mascot
     class Submit
-=begin
-    MP=
-    NM=
-    COM=Another fake search using charles
-    IATOL=
-    IA2TOL=
-    IASTOL=
-    IBTOL=
-    IB2TOL=
-    IBSTOL=
-    IYTOL=
-    IY2TOL=
-    IYSTOL=
-    SEG=
-    SEGT=
-    SEGTU=
-    LTOL=
-    TOL=1.2
-    TOLU=Da
-    ITH=
-    ITOL=0.6
-    ITOLU=Da
-    PFA=1
-    DB=GbetaCCT_drome
-    MODS=Carbamidomethyl (C)
-    MASS=Monoisotopic
-    CLE=Trypsin
-    FILE=two_spectra.mgf
-    PEAK=AUTO
-    QUE=
-    TWO=
-    SEARCH=MIS
-    USERNAME=John Smith
-    USEREMAIL=jtprince@gmail.com
-    CHARGE=2+
-    INTERMEDIATE=
-    REPORT=AUTO
-    OVERVIEW=
-    FORMAT=Mascot generic
-    FORMVER=1.01
-    FRAG=
-    IT_MODS=Oxidation (M)
-    USER00=
-    USER01=
-    USER02=
-    USER03=
-    USER04=
-    USER05=
-    USER06=
-    USER07=
-    USER08=
-    USER09=
-    USER10=
-    USER11=
-    USER12=
-    PRECURSOR=
-    TAXONOMY=All entries
-    ACCESSION=
-    REPTYPE=peptide
-    SUBCLUSTER=
-    ICAT=
-    INSTRUMENT=ESI-TRAP
-    ERRORTOLERANT=
-    FRAMES=
-    CUTOUT=
-    USERID=0
-    QUANTITATION=None
-    DECOY=1
-    PEP_ISOTOPE_ERROR=1
-
-    RULES=1,2,8,9,10,13,14,15
-    INTERNALS=0.0,700.0
-
-=end
-
-
-
-
       def initialize(data={})
-
-
-        @data = {
-          'INTERMEDIATE' => nil,
-          'FORMVER' =>	'1.01',
-          'SEARCH' =>	'MIS',
-          'PEAK' =>	'AUTO',
-          'REPTYPE' =>	'peptide',
-          'ErrTolRepeat' =>	'0',
-          'SHOWALLMODS' =>	nil,
-          'USERNAME' =>	'John Smith',
-          'USEREMAIL' =>	'jtprince@gmail.com',
-          'COM' =>	'Second fake search using charles trying nph-mascot1.exe directly',
-          'DB' =>	'GbetaCCT_drome',
-          'CLE' =>	'Trypsin',
-          'PFA' =>	'1',
-          'QUANTITATION' =>	'None',
-          'TAXONOMY' =>	'All entries',
-          'MODS' =>	'Carbamidomethyl (C)',
-          'IT_MODS' =>	'Oxidation (M)',
-          'TOL' =>	'1.2',
-          'TOLU' =>	'Da',
-          'PEP_ISOTOPE_ERROR' =>	'1',
-          'ITOL' =>	'0.6',
-          'ITOLU' =>	'Da',
-          'CHARGE' =>	'2+',
-          'MASS' =>	'Monoisotopic',
-          'PATH_TO_FILE' =>	'/home/jtprince/dev/mspire-mascot-dat/spec/testfiles/two_spectra.mgf',
-          #'Size' =>	'12.45 KB (12745 bytes)',
-          'FORMAT' =>	'Mascot generic',
-          'PRECURSOR' =>	nil,
-          'INSTRUMENT' =>	'ESI-TRAP',
-          'DECOY' =>	'1',
-          'REPORT' =>	'AUTO',
-          'COM' => 'Can be used for various things',
-        }
-
-
-        @data = {
-        URL: 'http://jp1.chem.byu.edu/mascot/cgi/nph-mascot.exe?1',
-        INTERMEDIATE: "",
-        FORMVER: '1.01',
-        SEARCH: 'MIS',
-        PEA: 'AUTO',
-        REPTYPE: 'peptide',
-        ErrTolRepeat: '0',
-        SHOWALLMODS: "",
-        # Putuser name and email here for Mascot to use in the search info reports,
-        USERNAME: 'testing',
-        USEREMAIL: 'john.prince@colorado.edu',
-        # This is the comment line that shows up in the Mascot search results,
-        COM: 'just a test',
-        DB: 'ipi_HUMAN_v3_55',
-        #DB : ipi_HUMAN_v3_55_FR,
-        #Flip_DB : ipi_HUMAN_v3_55_rev,
-        #Flip_DB : ,
-        TAXONOMY: 'All entries',
-        CLE: 'Trypsin',
-        PFA: '1',
-        # These are comma separated lists for the modifications.,
-        # If you want no mods, use []
-        MODS: '[Carbamidomethyl (C)]',
-        IT_MODS: '[Oxidation (M)]',
-        QUANTITATION: 'None',
-        TOL: '50.0',
-        TOLU: 'ppm',
-        PEP_ISOTOPE_ERROR: '1',
-        ITOL: '0.8',
-        ITOLU: 'Da',
-        CHARGE: '1+, 2+ and 3+',
-          MASS: 'Monoisotopic',
-        FORMAT: 'Mascot generic',
-        PRECURSOR: "",
-        INSTRUMENT: 'ESI-TRAP',
-        ERRORTOLERANT: '0',
-        DECOY: '0',
-        REPORT: 'AUTO',
-        }
-
+        @data = data
       end
 
       def submit!(file=nil)
@@ -211,27 +72,31 @@ module Mspire
         #uri = "http://jp1.chem.byu.edu/mascot/cgi/nph-mascot.exe?1"
 
         uri = @data.delete(:URL)
+
         url = URI.parse(uri)
 
         basename = File.basename(file)
 
         File.open(file) do |io|
           # MAYBE
-          @data['Content-Type'] = 'text/html'
+          #@data['Content-Type'] = 'text/html'
           @data["FILE"] = UploadIO.new(io, "application/octet-stream", basename)
           @data.keys.each {|k| @data[k.to_s] = @data.delete(k) }
-          p @data
           #@data['Size'] = io.size
-          req = Net::HTTP::Post::Multipart.new(url.path, @data)
-          p req
-          puts req
-          puts req.methods - Object.new.methods
-          res = Net::HTTP.start(url.host, url.port) do |http|
-            p http
-            reply = http.request(req)
-            sleep 4
-            p reply
-          end
+          req = Net::HTTP::Post::Multipart.new(url.path, @data, headers={}, "---------------------------117983339220455289611819249521")
+          http = Net::HTTP.new(url.host, url.port)
+          http.set_debug_output $stderr # DUMP
+          #req.write_tmp
+          res = http.start {|http| http.request(req) }
+          #abort 'here'
+          #res = Net::HTTP.start(url.host, url.port) do |http|
+          #  p http
+          #  reply = http.request(req)
+          #  sleep 4
+          #  p reply
+          #end
+          puts "AFTER REQUEST!!!!"
+          p res
           p res.methods - Object.new.methods
           #begin
           #  puts "#{methd}: #{res.send(methd)}"
